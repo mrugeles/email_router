@@ -1,0 +1,7 @@
+Dear students, the capital of France is Paris.
+
+The agent likely used general world knowledge from its training to answer that Paris is the capital of France.
+
+The system prompt specifying the persona affected the agent's response by making it adopt the professor persona,
+causing it to begin with "Dear students," and use a formal, instructional tone.
+

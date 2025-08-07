@@ -1,0 +1,16 @@
+Instantiating RAGKnowledgePromptAgent...
+Computing knowledge text chunks and embeddings...
+Text length: 3898 characters, chunk size: 1000, overlap: 100
+Starting text chunking...
+Text chunking completed. Total chunks created: 4
+Knowledge text chunks computed.
+Calculating embeddings for the chunks...
+Embeddings calculated.
+Prompt: What is the podcast that Clara hosts about?
+Finding response in knowledge...
+Response: Dear students,
+
+The podcast that Clara hosts is called "Crosscurrents." It is a show that explores the intersection of science, culture, and ethics. Each week, Clara interviews researchers, engineers, artists, and activists on a wide range of topics such as brain-computer interfaces, neuroplasticity, climate migration, LLM prompt engineering, decentralized identity, and indigenous knowledge systems. The podcast delves into various subjects related to science and technology, aiming to provide a platform for discussions on important issues shaping our world today.
+
+Best regards,
+Your college professor
