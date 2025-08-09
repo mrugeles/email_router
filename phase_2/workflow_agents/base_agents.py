@@ -282,6 +282,7 @@ class EvaluationAgent:
                     {"role": "system", "content": f"You are a critical evaluator with the role: {self.persona}. Be objective."},
                     {"role": "user", "content": eval_prompt}
                 ],# TODO: 5 - Define the message structure sent to the LLM for evaluation (use temperature=0)
+                temperature=0
             )
             evaluation = response.choices[0].message.content.strip()
             print(f"Evaluator Agent Evaluation:\n{evaluation}")
@@ -302,6 +303,7 @@ class EvaluationAgent:
                         {"role": "system", "content": "You are an expert writing coach who gives only concise correction instructions."},
                         {"role": "user", "content": instruction_prompt}
                     ], # TODO: 6 - Define the message structure sent to the LLM to generate correction instructions (use temperature=0)
+                    temperature=0
                 )
                 instructions = response.choices[0].message.content.strip()
                 print(f"Instructions to fix:\n{instructions}")

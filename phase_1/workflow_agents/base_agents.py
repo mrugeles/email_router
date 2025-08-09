@@ -260,6 +260,8 @@ class EvaluationAgent:
         client = OpenAI(base_url="https://openai.vocareum.com/v1", api_key=self.openai_api_key)
         prompt_to_evaluate = initial_prompt
         iterations = 0
+        final_response = None
+        evaluation = None
         for i in range(self.max_interactions):# TODO: 2 - Set loop to iterate up to the maximum number of interactions:
             print(f"\n--- Interaction {i+1} ---")
             iterations = i+1
@@ -280,6 +282,7 @@ class EvaluationAgent:
                     {"role": "system", "content": f"You are a critical evaluator with the role: {self.persona}. Be objective."},
                     {"role": "user", "content": eval_prompt}
                 ],# TODO: 5 - Define the message structure sent to the LLM for evaluation (use temperature=0)
+                temperature=0
             )
             evaluation = response.choices[0].message.content.strip()
             print(f"Evaluator Agent Evaluation:\n{evaluation}")
@@ -287,6 +290,7 @@ class EvaluationAgent:
             print(" Step 3: Check if evaluation is positive")
             if evaluation.lower().startswith("yes"):
                 print("✅ Final solution accepted.")
+                final_response = response_from_worker
                 break
             else:
                 print(" Step 4: Generate instructions to correct the response")
@@ -299,6 +303,7 @@ class EvaluationAgent:
                         {"role": "system", "content": "You are an expert writing coach who gives only concise correction instructions."},
                         {"role": "user", "content": instruction_prompt}
                     ], # TODO: 6 - Define the message structure sent to the LLM to generate correction instructions (use temperature=0)
+                    temperature=0
                 )
                 instructions = response.choices[0].message.content.strip()
                 print(f"Instructions to fix:\n{instructions}")
@@ -311,7 +316,7 @@ class EvaluationAgent:
                     f"Make only these corrections, do not alter content validity: {instructions}"
                 )
         return {
-            "final_response": response,
+            "final_response": final_response,
             "final_evaluation": evaluation,
             "iterations": iterations
         } 
@@ -380,9 +385,19 @@ class ActionPlanningAgent:
         # Provide the following system prompt along with the user's prompt:
         # "You are an action planning agent. Using your knowledge, you extract from the user prompt the steps requested to complete the action the user is asking for. You return the steps as a list. Only return the steps in your knowledge. Forget any previous context. This is your knowledge: {pass the knowledge here}"
         system_prompt = (
-            f"You are an action planning agent. Using your knowledge, you extract from the user prompt "
-            f"the steps requested to complete the action the user is asking for. You return the steps as a list. "
-            f"Only return the steps in your knowledge. Forget any previous context. This is your knowledge: {self.knowledge}"
+            f"""
+            You are an action planning agent.
+
+            Your task is to extract a clear, numbered list of steps based ONLY on the provided knowledge and the user request. Follow these strict rules:
+            
+            1. Use ONLY the information from the knowledge section below.
+            2. Do NOT invent or guess steps that are not explicitly present in the knowledge.
+            3. If no relevant steps can be found in the knowledge, respond with: "Insufficient knowledge to generate steps."
+            4. Do NOT explain or add commentary — only return the steps as a numbered list.
+            
+            ### KNOWLEDGE
+            {self.knowledge}
+            """
         )
 
         response = client.chat.completions.create(
@@ -396,7 +411,7 @@ class ActionPlanningAgent:
 
 
         response_text = response.choices[0].message.content.strip()  # TODO: 4 - Extract the response text from the OpenAI API response
-
+        print("Response from OpenAI API:", response_text)
         # TODO: 5 - Clean and format the extracted steps by removing empty lines and unwanted text
         steps = [step.strip() for step in response_text.split("\n") if step.strip()]
 

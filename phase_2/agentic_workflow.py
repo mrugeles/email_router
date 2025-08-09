@@ -249,6 +249,7 @@ print("\nDefining workflow steps from the workflow prompt")
 #   4. After the loop, print the final output of the workflow (the last completed step).
 workflow_steps = action_planning_agent.extract_steps_from_prompt(workflow_prompt)
 print(f"Workflow steps: {len(workflow_steps)}")
+"""
 completed_steps = []
 for step in workflow_steps:
     print("" + "-" * 50)
@@ -260,3 +261,4 @@ print("\nWorkflow execution completed.")
 print("\nFinal output of the workflow:")
 print(completed_steps[-1])  # Print the last completed step as the final output
 print("\n*** Workflow execution finished ***\n")
+"""
