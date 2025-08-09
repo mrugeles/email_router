@@ -173,13 +173,13 @@ routing_agent = RoutingAgent(
     agents=[
         {
             'name': 'Product Manager',
-            'description': 'Routes to the Product Manager support function for user story extraction.',
+            'description': 'Routes to the Product Manager support function for user-story extraction only.',
             # Placeholder for the support function to be defined later
             'func': lambda x: product_manager_support_function(x)
         },
         {
             'name': 'Program Manager',
-            'description': 'Routes to the Program Manager support function for feature extraction.',
+            'description': 'Routes to the Program Manager support function for feature extraction by grouping related user stories into features.',
             # Placeholder for the support function to be defined later
             'func': lambda x: program_manager_support_function(x)
         },
