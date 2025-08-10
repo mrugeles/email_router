@@ -384,21 +384,8 @@ class ActionPlanningAgent:
         # TODO: 3 - Call the OpenAI API to get a response from the "gpt-3.5-turbo" model.
         # Provide the following system prompt along with the user's prompt:
         # "You are an action planning agent. Using your knowledge, you extract from the user prompt the steps requested to complete the action the user is asking for. You return the steps as a list. Only return the steps in your knowledge. Forget any previous context. This is your knowledge: {pass the knowledge here}"
-        system_prompt = (
-            f"""
-            You are an action planning agent.
+        system_prompt = f"You are an action planning agent. Using your knowledge, you extract from the user prompt the steps requested to complete the action the user is asking for. You return the steps as a list. Only return a numbered list. Only return the steps in your knowledge. Forget any previous context. This is your knowledge: {self.knowledge}"
 
-            Your task is to extract a clear, numbered list of steps based ONLY on the provided knowledge and the user request. Follow these strict rules:
-            
-            1. Use ONLY the information from the knowledge section below.
-            2. Do NOT invent or guess steps that are not explicitly present in the knowledge.
-            3. If no relevant steps can be found in the knowledge, respond with: "Insufficient knowledge to generate steps."
-            4. Do NOT explain or add commentary — only return the steps as a numbered list.
-            
-            ### KNOWLEDGE
-            {self.knowledge}
-            """
-        )
 
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",

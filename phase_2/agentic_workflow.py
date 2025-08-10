@@ -172,24 +172,32 @@ routing_agent = RoutingAgent(
     openai_api_key=openai_api_key,
     agents=[
         {
-            'name': 'Product Manager',
-            'description': 'Routes to the Product Manager support function for user-story extraction only.',
-            # Placeholder for the support function to be defined later
-            'func': lambda x: product_manager_support_function(x)
+            "name": "Product Manager",
+            "description": (
+                "Defines user stories from the product spec using a persona–action–outcome frame "
+                "and clear acceptance criteria. Focus: authoring stories that describe product functionality."
+            ),
+            "func": lambda x: product_manager_support_function(x)
         },
         {
-            'name': 'Program Manager',
-            'description': 'Routes to the Program Manager support function for feature extraction by grouping related user stories into features.',
-            # Placeholder for the support function to be defined later
-            'func': lambda x: program_manager_support_function(x)
+            "name": "Program Manager",
+            "description": (
+                "Groups related user stories into features/epics and plans the roadmap: sequencing, "
+                "milestones, and cross-team coordination. Focus: features and scheduling; not task breakdown."
+            ),
+            "func": lambda x: program_manager_support_function(x)
         },
         {
-            'name': 'Development Engineer',
-            'description': 'Routes to the Development Engineer support function for task extraction.',
-            # Placeholder for the support function to be defined later
-            'func': lambda x: dev_engineer_support_function(x)
+            "name": "Development Engineer",
+            "description": (
+                "Defines engineering tasks for each user story (implementation, tests, integration, docs) "
+                "by breaking stories into actionable work items. Focus: task breakdown for the required engineering work; "
+                "does not author stories or group features."
+            ),
+            "func": lambda x: dev_engineer_support_function(x)
         }
     ]
+
 )
 
 # Job function persona support functions
@@ -217,6 +225,8 @@ def program_manager_support_function(query):
     Support function for Program Manager to extract features.
     """
     print("Executing Program Manager support function...")
+    if len(completed_steps) > 0:
+        query = f"{query}\n{completed_steps[-1]}"
     response = program_manager_knowledge_agent.respond(query)
     evaluation = program_manager_evaluation_agent.evaluate(response)
     return evaluation['final_response']
@@ -227,6 +237,8 @@ def dev_engineer_support_function(query):
     Support function for Development Engineer to extract development tasks.
     """
     print("Executing Development Engineer support function...")
+    if len(completed_steps) > 0:
+        query = f"{query}\n{completed_steps[-1]}"
     response = development_engineer_knowledge_agent.respond(query)
     evaluation = development_engineer_evaluation_agent.evaluate(response)
     return evaluation['final_response']
@@ -249,16 +261,18 @@ print("\nDefining workflow steps from the workflow prompt")
 #   4. After the loop, print the final output of the workflow (the last completed step).
 workflow_steps = action_planning_agent.extract_steps_from_prompt(workflow_prompt)
 print(f"Workflow steps: {len(workflow_steps)}")
-"""
 completed_steps = []
 for step in workflow_steps:
     print("" + "-" * 50)
     print(f"\nExecuting step: {step}")
+    if len(completed_steps) > 0:
+        step = f"{completed_steps[-1]}\n{step}"
     result = routing_agent.route(step)
+    result = f"{step}\n{'='*50}\n{result}\n"
     completed_steps.append(result)
     print(f"Result of step: {result}")
 print("\nWorkflow execution completed.")
 print("\nFinal output of the workflow:")
 print(completed_steps[-1])  # Print the last completed step as the final output
+# Store completed_steps in a text file called plan.txt
 print("\n*** Workflow execution finished ***\n")
-"""
